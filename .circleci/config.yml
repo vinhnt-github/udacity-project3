@@ -129,6 +129,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: yum -y install tar gzip
+          command: |
+            yum -y install tar gzip
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
@@ -144,6 +148,7 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
+      # TO DO
       # - run:
       #     name: Add back-end ip to ansible inventory
       #     command: |
@@ -155,23 +160,22 @@ jobs:
       #       - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
 
-  # configure-infrastructure:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           # Your code here
-  #           exit 1
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+    steps:
+      - checkout
+      # Add ssh keys with fingerprint
+      # attach workspace
+      # TO DO
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
   #     # Here's where you will add some code to rollback on failure
 
   # run-migrations:
