@@ -148,35 +148,44 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
-      # TO DO
-      # - run:
-      #     name: Add back-end ip to ansible inventory
-      #     command: |
-      #       # Your code here
-      #       exit 1
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure
+      - run:
+          name: Add the EC2 instance IP to the Ansible inventory
+          command: |
+            aws ec2 describe-instances \
+                --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --output text >> ~/project/.circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+
+      - destroy-environment
 
   configure-infrastructure:
     docker:
-      # Docker image here that supports Ansible
+      - image: python:alpine3.16
     steps:
       - checkout
-      # Add ssh keys with fingerprint
-      # attach workspace
-      # TO DO
+      - add_ssh_keys:
+          fingerprints:
+            - "9f:44:fd:44:44:28:2d:e3:82:0a:0e:db:02:b1:d4:a5:8d:fe:6d:f0"
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
-            # Your code here
+            apk add --update ansible openssh-client
+            apk add --update tar gzip ansible nodejs npm curl
+            pip install awscli
       - run:
           name: Configure server
           command: |
-            # Your code here
-  #     # Here's where you will add some code to rollback on failure
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment
 
   # run-migrations:
   #   docker:
@@ -275,7 +284,7 @@ cleanup:
   docker:
     # Docker image here
   steps:
-    # Checkout code from git
+    - checkout
     - run:
         name: Get old stack workflow id
         command: |
@@ -328,5 +337,5 @@ workflows:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
-      - cleanup:
-          # requires: [cloudfront-update]
+      # - cleanup:
+      # requires: [cloudfront-update]
