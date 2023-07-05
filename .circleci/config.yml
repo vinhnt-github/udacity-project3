@@ -194,7 +194,7 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-     - run:
+      - run:
           name: prepare environment for backend build
           command: |
             echo "Preparing environment for backend build"
