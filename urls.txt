@@ -1,2 +1,2 @@
 [URL01] https://github.com/vinhnt-github/udacity-project3
-[URL02] http://udapeople-a9356e0.s3-website-us-east-1.amazonaws.com
+[URL02] http://udapeople-f15684b.s3-website-us-east-1.amazonaws.com
